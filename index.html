@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+  <title>Ko'rish uchun sayt</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Qaralgan sayt</h1>
+      <div class="small">Faqat admin rasm va sana o'zgartirishi mumkin</div>
+    </header>
+
+    <main class="card">
+      <section class="gallery">
+        <div class="photo" id="photoContainer">
+          <div class="muted" id="noImageText">Rasm mavjud emas</div>
+        </div>
+
+        <div class="meta">
+          <div class="date" id="dateDisplay">—</div>
+        </div>
+
+        <div class="admin-panel" id="adminPanel">
+          <div class="admin-row">
+            <label class="small">Rasm tanlash:</label>
+            <input type="file" id="imageInput" accept="image/*">
+          </div>
+          <div class="admin-row" style="margin-top:8px">
+            <label class="small">Sana (YYYY-MM-DD):</label>
+            <input type="text" id="dateInput" placeholder="2025-09-20">
+            <div class="controls">
+              <button id="saveBtn">Saqlash</button>
+              <button id="clearBtn" type="button">Tozalash</button>
+            </div>
+          </div>
+          <div class="small" style="margin-top:8px">Eslatma: faqat rasm va sana saqlanadi. Boshqa o'zgartirishlar imkoni yo'q.</div>
+        </div>
+
+      </section>
+
+      <footer>
+        Sayt ochiq ko'rish uchun. Qo'shimcha xavfsizlik: server va haqiqiy login kerak.
+      </footer>
+    </main>
+  </div>
+
+  <!-- Past chap burchakdagi kichik admin tugma -->
+  <div class="admin-toggle" id="adminToggle" title="Admin kirish">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 12a3 3 0 100-6 3 3 0 000 6zM4 20a8 8 0 0116 0" stroke="#cbd5e1" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="small">Admin</span>
+  </div>
+
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+      <h2 id="loginTitle">Admin kirish</h2>
+      <div class="small">parol bilan kiring. parol faqat adminlarga beriladi</div>
+      <div style="height:12px"></div>
+      <input type="password" id="passwordInput" placeholder="Parol">
+      <div style="height:12px"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end">
+        <button id="loginBtn">Kirish</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CONFIG: o'zingiz xohlagan parolni bu yerda o'zgartiring
+    const DEFAULT_PASSWORD = '5555'; // xavfsiz emas — server bilan almashtiring real loyihada
+
+    // elementlar
+    const loginOverlay = document.getElementById('loginOverlay');
+    const loginBtn = document.getElementById('loginBtn');
+    const passwordInput = document.getElementById('passwordInput');
+    const adminPanel = document.getElementById('adminPanel');
+    const imageInput = document.getElementById('imageInput');
+    const photoContainer = document.getElementById('photoContainer');
+    const noImageText = document.getElementById('noImageText');
+    const dateDisplay = document.getElementById('dateDisplay');
+    const dateInput = document.getElementById('dateInput');
+    const saveBtn = document.getElementById('saveBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const adminToggle = document.getElementById('adminToggle');
+
+    // localStorage kalitlar
+    const IMG_KEY = 'site_image_dataurl_v1';
+    const DATE_KEY = 'site_image_date_v1';
+
+    // yuklangan rasmni ko'rsatish
+    function render() {
+      const dataUrl = localStorage.getItem(IMG_KEY);
+      const date = localStorage.getItem(DATE_KEY);
+      photoContainer.innerHTML = '';
+      if (dataUrl) {
+        const img = document.createElement('img');
+        img.src = dataUrl;
+        img.alt = 'Uploaded image';
+        photoContainer.appendChild(img);
+      } else {
+        noImageText.textContent = 'Rasm mavjud emas';
+        photoContainer.appendChild(noImageText);
+      }
+      dateDisplay.textContent = date || '—';
+    }
+
+    // rasmni localStorage ga saqlash
+    imageInput.addEventListener('change', (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        try {
+          const d = ev.target.result;
+          // agar rasm juda katta bo'lsa ogohlantirish
+          if (d.length > 2_000_000) { // taxminiy limit
+            if (!confirm('Rasm katta — saqlash davom etilsinmi? (brauzer sekinlashishi mumkin)')) return;
+          }
+          localStorage.setItem(IMG_KEY, d);
+          render();
+        } catch(err){
+          alert('Rasmni saqlashda xatolik');
+        }
+      }
+      reader.readAsDataURL(file);
+    })
+
+    saveBtn.addEventListener('click', ()=>{
+      const v = dateInput.value.trim();
+      // oddiy validatsiya YYYY-MM-DD
+      if (v && !/^\d{4}-\d{2}-\d{2}$/.test(v)){
+        alert('Sana format: YYYY-MM-DD');
+        return;
+      }
+      if (v) localStorage.setItem(DATE_KEY, v);
+      else localStorage.removeItem(DATE_KEY);
+      render();
+      alert('Saqlandi');
+    })
+
+    clearBtn.addEventListener('click', ()=>{
+      if (!confirm('Rasm va sana ochirilsinmi?')) return;
+      localStorage.removeItem(IMG_KEY);
+      localStorage.removeItem(DATE_KEY);
+      imageInput.value = '';
+      dateInput.value = '';
+      render();
+    })
+
+    // admin toggle ochadi
+    adminToggle.addEventListener('click', ()=>{
+      loginOverlay.style.display = 'flex';
+      passwordInput.focus();
+    });
+
+    // login
+    loginBtn.addEventListener('click', ()=>{
+      const p = passwordInput.value;
+      if (p === DEFAULT_PASSWORD) {
+        loginOverlay.style.display = 'none';
+        adminPanel.style.display = 'block';
+        // yuklab kichik maydonlarni to'ldirish
+        dateInput.value = localStorage.getItem(DATE_KEY) || '';
+      } else {
+        alert('Notogri parol');
+      }
+    })
+
+    // overlay ni ESC bilan yopish
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Escape') {
+        loginOverlay.style.display = 'none';
+      }
+    });
+
+    // enter bilan kirish
+    passwordInput.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter') loginBtn.click();
+    })
+
+    // boshlang'ich render
+    render();
+  </script>
+</body>
+</html>

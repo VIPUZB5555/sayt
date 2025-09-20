@@ -1,0 +1,43 @@
+      :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#9aa4b2;--glass:rgba(255,255,255,0.04)}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto;min-height:100vh;background:linear-gradient(180deg,#071028 0%, #091426 50%, #04111f 100%);color:#ecf0f6;display:flex;align-items:center;justify-content:center;padding:18px}
+    .wrap{width:100%;max-width:1100px;padding:16px}
+    header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    .card{width:100%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:16px;box-shadow:0 6px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
+    .gallery{display:grid;grid-template-columns:1fr;gap:12px;align-items:center;justify-items:center;padding:12px}
+    .photo{width:100%;max-width:960px;height:60vh;min-height:220px;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#071128,#041022);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03)}
+    .photo img{max-width:100%;max-height:100%;display:block;object-fit:cover}
+    .meta{display:flex;gap:12px;align-items:center;margin-top:8px;flex-wrap:wrap}
+    .date{background:var(--glass);padding:8px 12px;border-radius:10px;color:var(--muted);font-weight:600}
+    .muted{color:var(--muted);font-size:14px}
+
+    /* Admin panel */
+    .admin-panel{margin-top:12px;background:linear-gradient(180deg, rgba(124,58,237,0.12), rgba(124,58,237,0.06));padding:10px;border-radius:10px;display:none}
+    .admin-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    input[type=file]{display:block}
+    input[type=text], input[type=password]{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    button{background:var(--accent);border:none;padding:8px 12px;border-radius:8px;color:white;font-weight:600;cursor:pointer}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Admin toggle (past chap burchak) */
+    .admin-toggle{position:fixed;left:14px;bottom:14px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(4px);padding:8px 10px;border-radius:999px;display:flex;align-items:center;gap:8px;cursor:pointer;z-index:90}
+    .admin-toggle span{font-size:13px;color:var(--muted)}
+
+    .login-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(0deg, rgba(2,6,23,0.6), rgba(2,6,23,0.75));backdrop-filter:blur(4px);z-index:100}
+    .login-card{width:360px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+    .login-card h2{margin:0 0 8px 0}
+    .controls{display:flex;gap:10px;align-items:center}
+    footer{margin-top:12px;color:var(--muted);font-size:13px;text-align:center}
+
+    @media (max-width:840px){
+      body{padding:12px}
+      .photo{height:46vh}
+      .login-card{width:90%}
+      header{flex-direction:column;align-items:flex-start;gap:8px}
+    }
+    @media (max-width:480px){
+      .photo{height:38vh}
+      h1{font-size:18px}
+      .admin-toggle{left:10px;bottom:10px;padding:7px 9px}
+    }
